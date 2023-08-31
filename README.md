@@ -87,3 +87,5 @@ This project uses code sections from this project: (https://github.com/lydasia/o
 •	LEDG : Output Pin for LED Green Channel (default: 12 )
 
 •	LEDB : Output Pin for LED Blue Channel (default: 14 )
+
+I will soon update this with circuit diagram and board layout.
