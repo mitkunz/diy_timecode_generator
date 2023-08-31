@@ -54,6 +54,7 @@ SMPTE standard-compliant DIY LTC timecode generator, that supports framerates of
 
 •	Jumpercables / Cables
 
+
 ## Required Boards / Libraries
 •	ESP32 Boards (https://github.com/espressif/arduino-esp32)
 
@@ -66,6 +67,9 @@ SMPTE standard-compliant DIY LTC timecode generator, that supports framerates of
 •	WiFi
 
 •	esp_timer (https://playground.arduino.cc/Code/Timer1/)
+
+### Modified Code
+This project uses code sections from this project: (https://github.com/lydasia/openltc), which are marked by comments.
 
 ## Pin Definitions
 •	tlcpin : Pin for Timecode Output (default: 4 )
