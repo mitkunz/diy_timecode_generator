@@ -94,3 +94,6 @@ This project uses code sections from this project: (https://github.com/lydasia/o
 
 I cannot guarantee that this code will work for everyone and with different components than the ones I use.
 Use this code at your own risk.
+
+## Housing and final build
+I will post my design for the housing box for 3d printing as soon as they are finished.
