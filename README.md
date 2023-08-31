@@ -88,4 +88,9 @@ This project uses code sections from this project: (https://github.com/lydasia/o
 
 •	LEDB : Output Pin for LED Blue Channel (default: 14 )
 
-I will soon update this with circuit diagram and board layout.
+## Circuit Board Layout
+
+![Timecode-Generator-Platine double](https://github.com/mitkunz/diy_timecode_generator/assets/143692878/8e2af48c-73da-4ad8-a9ea-5b337d576850)
+
+I cannot guarantee that this code will work for everyone and with different components than the ones I use.
+Use this code at your own risk.
