@@ -7,10 +7,9 @@
 RTC_DS3231 rtc;
 
 //TLC Levels
-#define highLevel 103 //82 103
-#define lowLevel 23 //44 23
-#define groundLevel 63 //63
-//#define framerate 25
+#define highLevel 103 
+#define lowLevel 23 
+#define groundLevel 63 
 
 //Pins
 #define tlcpin 4
@@ -37,7 +36,7 @@ int framerate = 25;
   #define DebugLog(x)        ((void) 0)
 #endif
 
-//Funktionsvariabeln
+//other variables
 
 volatile unsigned char hourCount = 0;
 volatile unsigned char minuteCount = 0;
@@ -56,7 +55,7 @@ bool kannsenden = false;
 bool kannempfangen = true;
 
 //Network
-// Datenstruktur für die Übertragungsvariablen
+// data structure for transmission variables
 struct Data {
   int hourCountSend = hourCount;
   int minuteCountSend = minuteCount;
@@ -76,13 +75,13 @@ unsigned long secondCounter = 0;
 unsigned long secondnow = 0;
 
 unsigned long long adjustedMicros = 0;
-unsigned long long rtcSyncInterval = 1000000ULL; // 1 Sekunde
+unsigned long long rtcSyncInterval = 1000000ULL; // = 1 Second
 unsigned long long lastMicros = 0;
 DateTime lastRtcSyncTime; // Time of last RTC synchronization
 
-//Synchronisierungsinterval
-unsigned long interval = 60 * 1000; //In Millisekunden
-unsigned long tempinterval = 0; //damit die Uhr sich beim Hochfahren einmal selbst stellt
+//Sync - Interval
+unsigned long interval = 60 * 1000; //in milliseconds
+unsigned long tempinterval = 0; //for initial clock setup on boot
 
 // The code of function setLevel(), timeUpdate() and timerInterrupt() is licenced and modified under MIT Licence:
 // Copyright (c) 2022 lydasia
@@ -596,7 +595,7 @@ void IRAM_ATTR setLevel(void)
   }
 }
 
-// Zeit anpassen / hochzählen
+// time update and count up
 void IRAM_ATTR timeUpdate(void)
 {
   if(bitCount < 79)
@@ -659,20 +658,20 @@ void IRAM_ATTR timerInterrupt()
   }
 }
 
-//Timecode wird empfangen
+//Timecode receiving
 void onDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len) {
   memcpy(&data, incomingData, sizeof(data));
   /*Serial.printf("Empfangen von: %02X:%02X:%02X:%02X:%02X:%02X\n",
                 mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);*/
   DebugLog("Daten erfolgreich erhalten");
 
-  //Timecode empfangen
+  //Timecode receive
   hourCount = data.hourCountSend;
   minuteCount = data.minuteCountSend;
   secondCount = data.secondCountSend;
   frameCount = data.frameCountSend;
 
-  //RTC nach dem empfangenen Timecode synchronisieren
+  //RTC sync to received timecode
   DateTime now = rtc.now();
   int year = now.year();
   int month = now.month();
@@ -680,10 +679,10 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len) {
   rtc.adjust(DateTime(year, month, day, hourCount, minuteCount, secondCount));
   DebugLog("E Timecode: " + String(data.hourCountSend) + ":" + String(data.minuteCountSend) + ":" + String(data.secondCountSend) + ":" + String(data.frameCountSend));
 
-  //LED Grün
+  //LED to green
   LEDdisplay(0,255,0);
 
-  //Ab jetzt empfängt der ESP32 bis er nichts mehr empfängt, dann sendet er
+  //now the ESP32 receives until it receives nothing anymore. then it becomes the transmitter
   kannsenden = false;
   kannempfangen = true;
 }
@@ -699,7 +698,7 @@ void setup()
   //WIFI Broadcast Setup
   WiFi.mode(WIFI_STA);
   if (esp_now_init() != ESP_OK) {
-    DebugLog("ESP-NOW Initialisierung fehlgeschlagen");
+    DebugLog("ESP-NOW Init failed!");
     return;
   }
   esp_now_register_recv_cb(onDataRecv);
@@ -710,7 +709,7 @@ void setup()
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    DebugLog("Peer hinzufügen fehlgeschlagen");
+    DebugLog("Add Peer failed!");
     return;
   }
   
@@ -724,9 +723,10 @@ void setup()
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     DebugLog("RTC adjusted!");
   }
+  // uncomment for manual clock set
   //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   
-  //Zeit erstmalig setzen
+  //setup time on boot
   DateTime now = rtc.now();
   hourCount = now.hour();
   minuteCount = now.minute();
@@ -759,7 +759,7 @@ void setup()
   ledcSetup(3, 5000 , 8);
   ledcAttachPin(LEDB, 3);
   
-  //LED Rot
+  //LED to red
   LEDdisplay(255,0,0);
 
   lastRtcSyncTime = rtc.now();
@@ -781,28 +781,24 @@ void loop()
   } else if (digitalRead(thirty) == HIGH) {
     framerate = 30;
   }
-
-  //unsigned long long currentTime = getAdjustedMicros();
-  //DebugLog(String(currentTime) + ' ' + String(micros()));
   
-  //Wann startet neue Sekunde
+  //when does a new second start
   unsigned long currentMicros = getAdjustedMicros();
   if (currentMicros - previousMicros >= 1000000) {
     previousMicros = currentMicros;
-    //DateTime now = rtc.now();
     newTimer = currentMicros;
-    //Korrigiere die Frequenz
+    //correct frequency
     ledcChangeFrequency(0, 1000000/framerate + 1/framerate, 8); //1000000/framerate
     secondCounter = 0;
   }
 
-  //Synchronisieren
+  //Sync
   unsigned long currentMillis = millis();
   char str[20];
   if (currentMillis - previousMillis >= tempinterval) {
     previousMillis = currentMillis;
     if (kannsenden && !kannempfangen) {
-      //Timecode senden
+      //send Timecode
       uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
       
       DateTime now = rtc.now();
@@ -817,9 +813,9 @@ void loop()
 
       esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &data, sizeof(data));
       if (result == ESP_OK) {
-        DebugLog("Daten erfolgreich übertragen");
+        DebugLog("Data sent!");
       } else {
-        DebugLog("Übertragung fehlgeschlagen");
+        DebugLog("Transmission failed!");
       }
 
       //LED Blau
@@ -836,7 +832,7 @@ void loop()
 
   //Frame Timer
   if (getAdjustedMicros() >= newTimer) {
-      newTimer += 1000000 / framerate / 80 / 2 + 0; //1000000 / framerate / 80 / 2
+      newTimer += 1000000 / framerate / 80 / 2 + 0;
       // Bit Timer
       if (secondCounter < framerate * 80 * 2) {
         timerInterrupt();
