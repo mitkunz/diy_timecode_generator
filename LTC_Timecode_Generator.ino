@@ -663,7 +663,7 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *incomingData, int len) {
   memcpy(&data, incomingData, sizeof(data));
   /*Serial.printf("Empfangen von: %02X:%02X:%02X:%02X:%02X:%02X\n",
                 mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);*/
-  DebugLog("Daten erfolgreich erhalten");
+  DebugLog("Data received!");
 
   //Timecode receive
   hourCount = data.hourCountSend;
