@@ -91,7 +91,10 @@ This project uses code sections from this project: (https://github.com/lydasia/o
 ## Circuit Board Layout
 
 ![Timecode-Generator-Platine double](https://github.com/mitkunz/diy_timecode_generator/assets/143692878/8e2af48c-73da-4ad8-a9ea-5b337d576850)
-I've made a little change to this layout by connecting the Vin of the RTC to Pin 32 instead of going straight to 3v3. This allows for a disabled RTC whenever the device is connected to a lipo battery and not turned on. Pin 32 gets HIGH when the ESP32 is booted. Otherwise the RTC would stay on and drain the battery faster.
+	
+    I've made a little change to this layout by connecting the VCC of the RTC to Pin 32 instead of going straight to 3v3. 
+    This allows for a disabled RTC whenever the device is connected to a lipo battery and not turned on. 
+    Pin 32 gets HIGH when the ESP32 is booted. Otherwise the RTC would stay on and drain the battery faster.
 
 I cannot guarantee that this code will work for everyone and with different components than the ones I use.
 Use this code at your own risk.
