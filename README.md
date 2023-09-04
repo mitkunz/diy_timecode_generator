@@ -90,7 +90,8 @@ This project uses code sections from this project: (https://github.com/lydasia/o
 
 ## Circuit Board Layout
 
-![Timecode-Generator-Platine double](https://github.com/mitkunz/diy_timecode_generator/assets/143692878/8e2af48c-73da-4ad8-a9ea-5b337d576850)
+![Timecode-Generator-Platine double](https://github.com/mitkunz/diy_timecode_generator/assets/143692878/513d358a-6c0e-43d6-ad08-cae10a0f1842)
+
 	
     I've made a little change to this layout by connecting the VCC of the RTC to Pin 32 instead of going straight to 3v3. 
     This allows for a disabled RTC whenever the device is connected to a lipo battery and not turned on. 
