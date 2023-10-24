@@ -7,9 +7,9 @@
 RTC_DS3231 rtc;
 
 //TLC Levels
-#define highLevel 103 
-#define lowLevel 23 
-#define groundLevel 63 
+#define highLevel 255 
+#define lowLevel 0 
+#define groundLevel 126 
 
 //Pins
 #define tlcpin 4
