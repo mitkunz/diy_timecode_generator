@@ -66,11 +66,9 @@ struct Data {
 Data data;
 
 unsigned long previousMillis = 0;
-unsigned long previousMicros = 0;
+unsigned long long previousMicros = 0;
 unsigned long previousSecond = 0;
-unsigned long rightMicros = 0;
-unsigned long adjustMicros = 0;
-unsigned long newTimer = 0;
+unsigned long long newTimer = 0;
 unsigned long secondCounter = 0;
 unsigned long secondnow = 0;
 
@@ -783,7 +781,7 @@ void loop()
   }
   
   //when does a new second start
-  unsigned long currentMicros = getAdjustedMicros();
+  unsigned long long currentMicros = getAdjustedMicros();
   if (currentMicros - previousMicros >= 1000000) {
     previousMicros = currentMicros;
     newTimer = currentMicros;
@@ -854,7 +852,15 @@ void LEDdisplay(int R, int G, int B) {
 
 unsigned long long getAdjustedMicros() {
   unsigned long long currentMicros = micros();
-  unsigned long long elapsedMicros = currentMicros - lastMicros;
+  unsigned long long elapsedMicros;
+
+  // Check for micros() rollover
+  if (currentMicros < lastMicros) {
+    elapsedMicros = (18446744073709551615ULL - lastMicros) + currentMicros + 1;
+  } else {
+    elapsedMicros = currentMicros - lastMicros;
+  }
+  
   adjustedMicros += elapsedMicros;
   lastMicros = currentMicros;
   
