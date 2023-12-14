@@ -78,7 +78,7 @@ unsigned long long lastMicros = 0;
 DateTime lastRtcSyncTime; // Time of last RTC synchronization
 
 //Sync - Interval
-unsigned long interval = 60 * 1000; //in milliseconds
+unsigned long interval = 3 * 1000; //in milliseconds
 unsigned long tempinterval = 0; //for initial clock setup on boot
 
 // The code of function setLevel(), timeUpdate() and timerInterrupt() is licenced and modified under MIT Licence:
